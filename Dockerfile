@@ -4,6 +4,9 @@ FROM python:3.10-slim
 RUN apt-get update && \
     apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra && \
     apt-get clean
+    
+RUN pip install -r requirements.txt
+
 
 WORKDIR /app
 COPY python-server/ /app
