@@ -5,10 +5,11 @@ import uuid
 
 app = Flask(__name__)
 
+# Temporary directory to store LaTeX files and PDFs
 UPLOAD_FOLDER = 'temp'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Full path to pdflatex executable
+# Full path to your local pdflatex executable (customize for Render later)
 PDFLATEX_PATH = r"C:\Users\12345\AppData\Local\Programs\MiKTeX\miktex\bin\x64\pdflatex.exe"
 
 @app.route('/generate-resume', methods=['POST'])
@@ -29,12 +30,14 @@ def generate_resume():
     try:
         subprocess.run([PDFLATEX_PATH, '-output-directory', UPLOAD_FOLDER, tex_path],
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        # Send the PDF as a download response
         return send_file(pdf_path, as_attachment=True)
     except subprocess.CalledProcessError:
         return jsonify({'error': 'Failed to compile LaTeX'}), 500
     finally:
-        # Cleanup auxiliary files
-        for ext in ['.aux', '.log', '.tex']:
+        # Clean up all files including the PDF
+        for ext in ['.aux', '.log', '.tex', '.pdf']:
             try:
                 os.remove(os.path.join(UPLOAD_FOLDER, f'{file_id}{ext}'))
             except FileNotFoundError:
