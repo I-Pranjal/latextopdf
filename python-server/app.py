@@ -1,17 +1,16 @@
 from flask import Flask, request, send_file, jsonify
+from flask_cors import CORS  # 👈 Import CORS
 import subprocess
 import os
 import uuid
 
 app = Flask(__name__)
+CORS(app)  # 👈 Enable CORS for all routes
 
-# Temporary directory to store LaTeX files and PDFs
 UPLOAD_FOLDER = 'temp'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Full path to your local pdflatex executable (customize for Render later)
-# PDFLATEX_PATH = r"C:\Users\12345\AppData\Local\Programs\MiKTeX\miktex\bin\x64\pdflatex.exe"
-PDFLATEX_PATH = 'pdflatex'               # Updated for render deployment
+PDFLATEX_PATH = 'pdflatex'  # For Render deployment
 
 @app.route('/generate-resume', methods=['POST'])
 def generate_resume():
@@ -31,13 +30,10 @@ def generate_resume():
     try:
         subprocess.run([PDFLATEX_PATH, '-output-directory', UPLOAD_FOLDER, tex_path],
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-        # Send the PDF as a download response
         return send_file(pdf_path, as_attachment=True)
     except subprocess.CalledProcessError:
         return jsonify({'error': 'Failed to compile LaTeX'}), 500
     finally:
-        # Clean up all files including the PDF
         for ext in ['.aux', '.log', '.tex', '.pdf']:
             try:
                 os.remove(os.path.join(UPLOAD_FOLDER, f'{file_id}{ext}'))
