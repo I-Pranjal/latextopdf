@@ -10,7 +10,8 @@ UPLOAD_FOLDER = 'temp'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Full path to your local pdflatex executable (customize for Render later)
-PDFLATEX_PATH = r"C:\Users\12345\AppData\Local\Programs\MiKTeX\miktex\bin\x64\pdflatex.exe"
+# PDFLATEX_PATH = r"C:\Users\12345\AppData\Local\Programs\MiKTeX\miktex\bin\x64\pdflatex.exe"
+PDFLATEX_PATH = 'pdflatex'               # Updated for render deployment
 
 @app.route('/generate-resume', methods=['POST'])
 def generate_resume():
