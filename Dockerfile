@@ -5,7 +5,7 @@ RUN apt-get update && \
     apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra && \
     apt-get clean
     
-RUN pip install -r requirements.txt
+RUN pip install -r python-server/ /requirements.txt
 
 
 WORKDIR /app
