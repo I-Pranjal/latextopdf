@@ -10,7 +10,7 @@ CORS(app)
 UPLOAD_FOLDER = 'temp'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-PDFLATEX_PATH = 'pdflatex'
+PDFLATEX_PATH = 'pdflatex'  # Make sure it's in your PATH or provide full path
 
 @app.route('/generate-resume', methods=['POST'])
 def generate_resume():
@@ -46,11 +46,12 @@ def generate_resume():
 
         @after_this_request
         def cleanup(response):
-            for ext in ['.aux', '.log', '.tex', '.pdf']:
-                try:
-                    os.remove(os.path.join(UPLOAD_FOLDER, f'{file_id}{ext}'))
-                except Exception:
-                    pass
+            try:
+                for filename in os.listdir(UPLOAD_FOLDER):
+                    if filename.startswith(file_id):
+                        os.remove(os.path.join(UPLOAD_FOLDER, filename))
+            except Exception:
+                pass
             return response
 
         return send_file(pdf_path, as_attachment=True)
